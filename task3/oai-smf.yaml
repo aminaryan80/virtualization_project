@@ -1,0 +1,102 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: oai-smf
+  labels:
+    app: oai-smf
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: oai-smf
+  template:
+    metadata:
+      labels:
+        app: oai-smf
+    spec:
+      containers:
+        - name: oai-smf
+          image: oaisoftwarealliance/oai-smf:latest
+          command: ["/bin/bash", "-c", "/openair-smf/bin/oai_smf -c /openair-smf/bin/oai-smf.conf -o"]
+          env:
+            - name: TZ
+              value: Europe/Paris
+            - name: INSTANCE
+              value: "0"
+            - name: PID_DIRECTORY
+              value: /var/run
+            - name: SMF_INTERFACE_NAME_FOR_N4
+              value: eth0
+            - name: SMF_INTERFACE_NAME_FOR_SBI
+              value: eth0
+            - name: SMF_INTERFACE_PORT_FOR_SBI
+              value: "80"
+            - name: SMF_INTERFACE_HTTP2_PORT_FOR_SBI
+              value: "9090"
+            - name: SMF_API_VERSION
+              value: v1
+            - name: DEFAULT_DNS_SEC_IPV4_ADDRESS
+              value: 4.4.4.4
+            - name: AMF_IPV4_ADDRESS
+              value: 0.0.0.0
+            - name: AMF_PORT
+              value: "80"
+            - name: AMF_API_VERSION
+              value: v1
+            - name: AMF_FQDN
+              value: oai-amf
+            - name: UDM_IPV4_ADDRESS
+              value: 127.0.0.1
+            - name: UDM_PORT
+              value: "80"
+            - name: UDM_API_VERSION
+              value: v1
+            - name: UDM_FQDN
+              value: localhost
+            - name: UPF_IPV4_ADDRESS
+              value: oai-spgwu
+            - name: UPF_FQDN_0
+              value: oai-spgwu
+            - name: NRF_IPV4_ADDRESS
+              value: oai-nrf
+            - name: NRF_PORT
+              value: "80"
+            - name: NRF_API_VERSION
+              value: v1
+            - name: NRF_FQDN
+              value: oai-nrf
+            - name: REGISTER_NRF
+              value: "yes"
+            - name: DISCOVER_UPF
+              value: "yes"
+            - name: USE_FQDN_DNS
+              value: "yes"
+          volumeMounts:
+            - name: smf-config-volume
+              mountPath: /openair-smf/bin/oai-smf.conf
+              subPath: oai-smf.conf
+      volumes:
+        - name: smf-config-volume
+          configMap:
+            name: oai-smf-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: oai-smf
+  labels:
+    app: oai-smf
+spec:
+  selector:
+    app: oai-smf
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+      name: http
+    - protocol: TCP
+      port: 9090
+      targetPort: 9090
+      name: http2
+  type: ClusterIP
+

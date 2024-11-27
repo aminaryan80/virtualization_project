@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: healthcheck-scripts
+data:
+  nrf-healthcheck.sh: |
+    #!/bin/bash
+    echo "Healthcheck script for NRF"
+  mysql-healthcheck.sh: |
+    #!/bin/bash
+    echo "Healthcheck script for MySQL"
+  amf-healthcheck.sh: |
+    #!/bin/bash
+    echo "Healthcheck script for AMF"
+  smf-healthcheck.sh: |
+    #!/bin/bash
+    echo "Healthcheck script for SMF"
+  spgwu-healthcheck.sh: |
+    #!/bin/bash
+    echo "Healthcheck script for SPGWU"
+

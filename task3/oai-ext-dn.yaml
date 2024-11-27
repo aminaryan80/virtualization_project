@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: oai-ext-dn
+  labels:
+    app: oai-ext-dn
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: oai-ext-dn
+  template:
+    metadata:
+      labels:
+        app: oai-ext-dn
+    spec:
+      containers:
+        - name: oai-ext-dn
+          image: ubuntu:bionic
+          securityContext:
+            privileged: true
+          command: ["/bin/bash", "-c"]
+          args:
+            - |
+              apt update;
+              apt install -y procps iptables iproute2 iperf iputils-ping;
+              iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE;
+              ip route add 12.1.1.0/24 via $(getent hosts oai-spgwu | awk '{ print $1 }') dev eth0;
+              sleep infinity;
+          livenessProbe:
+            exec:
+              command:
+                - /bin/bash
+                - -c
+                - "ping -c 2 oai-spgwu"
+            initialDelaySeconds: 10
+            periodSeconds: 10
+      restartPolicy: Always
+

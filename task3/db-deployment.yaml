@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mysql
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mysql
+  template:
+    metadata:
+      labels:
+        app: mysql
+    spec:
+      containers:
+      - name: mysql
+        image: mysql:5.7
+        env:
+        - name: MYSQL_DATABASE
+          value: "oai_db"
+        - name: MYSQL_USER
+          value: "test"
+        - name: MYSQL_PASSWORD
+          value: "test"
+        - name: MYSQL_ROOT_PASSWORD
+          value: "linux"
+        volumeMounts:
+        - name: db-scripts
+          mountPath: /docker-entrypoint-initdb.d/oai_db.sql
+          subPath: oai_db.sql
+      volumes:
+      - name: db-scripts
+        configMap:
+          name: db-scripts
+

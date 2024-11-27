@@ -1,0 +1,108 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: oai-spgwu
+  labels:
+    app: oai-spgwu
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: oai-spgwu
+  template:
+    metadata:
+      labels:
+        app: oai-spgwu
+    spec:
+      containers:
+        - name: oai-spgwu
+          image: oaisoftwarealliance/oai-spgwu-tiny:latest
+          env:
+            - name: TZ
+              value: "Europe/Paris"
+            - name: PID_DIRECTORY
+              value: "/var/run"
+            - name: SGW_INTERFACE_NAME_FOR_S1U_S12_S4_UP
+              value: "eth0"
+            - name: SGW_INTERFACE_NAME_FOR_SX
+              value: "eth0"
+            - name: PGW_INTERFACE_NAME_FOR_SGI
+              value: "eth0"
+            - name: NETWORK_UE_NAT_OPTION
+              value: "yes"
+            - name: NETWORK_UE_IP
+              value: "12.1.1.0/24"
+            - name: SPGWC0_IP_ADDRESS
+              value: "oai-smf"
+            - name: BYPASS_UL_PFCP_RULES
+              value: "no"
+            - name: MCC
+              value: "208"
+            - name: MNC
+              value: "99"
+            - name: MNC03
+              value: "099"
+            - name: TAC
+              value: "1"
+            - name: GTP_EXTENSION_HEADER_PRESENT
+              value: "yes"
+            - name: GW_ID
+              value: "1"
+            - name: REALM
+              value: "openairinterface.org"
+            - name: ENABLE_5G_FEATURES
+              value: "yes"
+            - name: REGISTER_NRF
+              value: "yes"
+            - name: USE_FQDN_NRF
+              value: "yes"
+            - name: UPF_FQDN_5G
+              value: "oai-spgwu"
+            - name: NRF_IPV4_ADDRESS
+              value: "oai-nrf"
+            - name: NRF_PORT
+              value: "80"
+            - name: NRF_API_VERSION
+              value: "v1"
+            - name: NRF_FQDN
+              value: "oai-nrf"
+            - name: NSSAI_SST_0
+              value: "1"
+            - name: NSSAI_SD_0
+              value: "1"
+            - name: DNN_0
+              value: "oai"
+          ports:
+            - containerPort: 2152
+              name: gtp
+            - containerPort: 8805
+              name: pfcp
+          securityContext:
+            privileged: true
+            capabilities:
+              add:
+                - NET_ADMIN
+                - SYS_ADMIN
+              drop:
+                - ALL
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: oai-spgwu
+  labels:
+    app: oai-spgwu
+spec:
+  selector:
+    app: oai-spgwu
+  ports:
+    - protocol: UDP
+      port: 2152
+      targetPort: 2152
+      name: gtp
+    - protocol: UDP
+      port: 8805
+      targetPort: 8805
+      name: pfcp
+  type: ClusterIP
+
