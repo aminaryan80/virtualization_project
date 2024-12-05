@@ -19,7 +19,7 @@ spec:
           privileged: true
         env:
         - name: RFSIMULATOR
-          value: "192.168.71.136"
+          value: "oai_gnb"
         - name: FULL_IMSI
           value: "208990100001100"
         - name: FULL_KEY
@@ -76,21 +76,3 @@ spec:
   - protocol: TCP
     port: 80
     targetPort: 80
----
-apiVersion: networking.k8s.io/v1
-kind: NetworkPolicy
-metadata:
-  name: nr-ue-network-policy
-spec:
-  podSelector:
-    matchLabels:
-      app: oai-nr-ue
-  ingress:
-  - from:
-    - podSelector:
-        matchLabels:
-          app: oai-gnb
-    ports:
-    - protocol: TCP
-      port: 80
-

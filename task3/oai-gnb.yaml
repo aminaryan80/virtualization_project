@@ -39,15 +39,15 @@ spec:
         - name: NSSAI_SD1
           value: "112233"
         - name: AMF_IP_ADDRESS
-          value: "192.168.71.132"
+          value: "oai-amf"
         - name: GNB_NGA_IF_NAME
           value: "eth0"
         - name: GNB_NGA_IP_ADDRESS
-          value: "192.168.71.136"
+          value: "oai_gnb"
         - name: GNB_NGU_IF_NAME
           value: "eth0"
         - name: GNB_NGU_IP_ADDRESS
-          value: "192.168.71.136"
+          value: "oai_gnb"
         - name: USE_ADDITIONAL_OPTIONS
           value: "--sa -E --rfsim"
         readinessProbe:
@@ -92,21 +92,3 @@ spec:
   - protocol: TCP
     port: 80
     targetPort: 80
----
-apiVersion: networking.k8s.io/v1
-kind: NetworkPolicy
-metadata:
-  name: gnb-network-policy
-spec:
-  podSelector:
-    matchLabels:
-      app: oai-gnb
-  ingress:
-  - from:
-    - podSelector:
-        matchLabels:
-          app: oai-ext-dn
-    ports:
-    - protocol: TCP
-      port: 80
-

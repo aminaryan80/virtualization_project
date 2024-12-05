@@ -32,7 +32,6 @@ spec:
               value: /var/run
           ports:
             - containerPort: 8080
-              name: http
 ---
 apiVersion: v1
 kind: Service
@@ -48,5 +47,9 @@ spec:
       port: 8080
       targetPort: 8080
       name: http
+    - protocol: TCP
+      port: 80
+      targetPort: 8080
+      name: http2
   type: ClusterIP
 

@@ -27,13 +27,5 @@ spec:
               iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE;
               ip route add 12.1.1.0/24 via $(getent hosts oai-spgwu | awk '{ print $1 }') dev eth0;
               sleep infinity;
-          livenessProbe:
-            exec:
-              command:
-                - /bin/bash
-                - -c
-                - "ping -c 2 oai-spgwu"
-            initialDelaySeconds: 10
-            periodSeconds: 10
       restartPolicy: Always
 

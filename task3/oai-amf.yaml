@@ -68,7 +68,6 @@ spec:
           value: "c42449363bbad02b66d16bc975d77cc1"
         ports:
         - containerPort: 80
-        - containerPort: 9090
       restartPolicy: Always
 
 
